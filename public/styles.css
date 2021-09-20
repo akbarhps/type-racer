@@ -1,0 +1,104 @@
+* {
+    padding: 0;
+    margin: auto;
+    max-width: 720px;
+    background-color: black;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.container {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 50vh 40vh 10vh;
+}
+
+#racer_view {
+    height: 100%;
+    width: 100%;
+    padding-right: 5px;
+    overflow-x: hidden;
+    margin-bottom: 20px;
+}
+
+.racers {
+    width: 100%;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.racer_track {
+    width: 100%;
+    padding-bottom: 3px;
+    border-bottom: white dashed thin;
+}
+
+.racer_car {
+    width: 30px;
+    height: 20px;
+    border-radius: 0 10px 10px 0;
+    margin-left: 0;
+    background-color: white;
+}
+
+#game_view {
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    border: white solid thin;
+    border-spacing: 8px;
+    grid-template-rows: auto 10vh;
+}
+
+.footer_view {
+    width: 100%;
+    height: 100%;
+}
+
+#game_view__text {
+    margin: 30px;
+}
+
+#game_view__input {
+    width: 92%;
+    padding: 0 20px;
+    height: 70%;
+    background: white;
+    font-size: 1.3rem;
+}
+
+.words {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.chars {
+    font-size: 1.3rem;
+    color: white;
+}
+
+.correct {
+    color: #00ff00;
+}
+
+.incorrect {
+    color: red;
+}
+
+.active {
+    text-decoration: underline;
+}
+
+::-webkit-scrollbar {
+    width: 3px;
+}
+
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+}
