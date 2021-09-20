@@ -2,7 +2,7 @@
 
 Simple type-racer app with web socket
 
-Live Website: [Open Website](https://type-racer.akbarhps.repl.co/) (tidak menjamin online terus)
+Live Website: [Open Website](https://simple-type-racer.herokuapp.com/) (tidak menjamin online terus)
 
 ---
 
