@@ -54,7 +54,8 @@ socket.on('start', word => {
 socket.on('update', player => {
     if (player.id !== curRacer.id) {
         updateRacer(player);
-    } else if(player.rank > 0) {
+    } else if (player.rank > 0) {
+        updateRacer(player);
         toggleButton(true);
     }
 });
