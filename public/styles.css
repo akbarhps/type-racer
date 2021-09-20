@@ -66,7 +66,6 @@
     z-index: 2;
     padding: 0 5px;
     overflow-x: hidden;
-    border: white solid thin;
 }
 
 .racers {
@@ -98,7 +97,6 @@
     width: 100%;
     height: 100%;
     display: grid;
-    border: white solid thin;
     padding: 0 5px;
     border-spacing: 8px;
     grid-template-rows: auto 10vh;
@@ -107,7 +105,10 @@
 .button_view {
     width: 100%;
     height: 100%;
+    z-index: 3;
     display: flex;
+    border-top: white solid thin;
+    border-bottom: white solid thin;
 }
 
 .buttons {
