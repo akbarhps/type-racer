@@ -8,14 +8,14 @@ const server = app.listen(PORT, () => console.log(`Server running on PORT: ${POR
 const io = socket(server);
 
 let words = [
-    // 'Yang terpenting, bukanlah seberapa besar mimpi kalian, melainkan seberapa besar upaya kalian mewujudkan mimpi itu',
-    // 'Aku rasa hidupku seperti musik. Itu mungkin bukan musik yang bagus tapi tetap mempunyai bentuk dan irama.',
-    // 'Bagi saya, hidup terlalu singkat untuk dilewatkan dengan biasa-biasa saja',
+    'Yang terpenting, bukanlah seberapa besar mimpi kalian, melainkan seberapa besar upaya kalian mewujudkan mimpi itu',
+    'Aku rasa hidupku seperti musik. Itu mungkin bukan musik yang bagus tapi tetap mempunyai bentuk dan irama.',
+    'Bagi saya, hidup terlalu singkat untuk dilewatkan dengan biasa-biasa saja',
     'Bermimpilah dalam hidup, jangan hidup dalam mimpi.',
-    // 'Dan Tuhan memelihara ketidakpastian itu pada seluruh umat manusia agar manusia terus belajar, terus bermimpi dan ujung-ujungnya kita akan kembali padanya.',
-    // 'Di saat kunikmati, hidup ini indah. Dan langsung pusing ketika mulai kupikirkan',
-    // 'Kita tak tahu dan tak pernah pasti tahu hingga semuanya berlalu. Benar atau salah, dituruti atau tidak dituruti, pada akhirnya yang bisa membuktikan cuma waktu.',
-    // 'Orang-orang itu telah melupakan bahwa belajar tidaklah melulu untuk mengejar dan membuktikan sesuatu, namun belajar itu sendiri, adalah perayaan dan penghargaan pada diri sendiri.',
+    'Dan Tuhan memelihara ketidakpastian itu pada seluruh umat manusia agar manusia terus belajar, terus bermimpi dan ujung-ujungnya kita akan kembali padanya.',
+    'Di saat kunikmati, hidup ini indah. Dan langsung pusing ketika mulai kupikirkan',
+    'Kita tak tahu dan tak pernah pasti tahu hingga semuanya berlalu. Benar atau salah, dituruti atau tidak dituruti, pada akhirnya yang bisa membuktikan cuma waktu.',
+    'Orang-orang itu telah melupakan bahwa belajar tidaklah melulu untuk mengejar dan membuktikan sesuatu, namun belajar itu sendiri, adalah perayaan dan penghargaan pada diri sendiri.',
 ]
 
 const randomString = (n) => {
