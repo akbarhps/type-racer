@@ -92,6 +92,7 @@
     margin-left: 0;
     background-color: white;
     border-radius: 0 10px 10px 0;
+    transition: all .2s ease-in-out;
 }
 
 #button_view__room_id {
