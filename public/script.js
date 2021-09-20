@@ -1,33 +1,130 @@
+let socket = io.connect(window.location.origin);
+
+let dialogName = document.getElementById('dialog_input_container');
+let dialogNameInput = document.getElementById('dialog_view__input');
+let dialogNameButton = document.getElementById('dialog_view__button');
+
+let dialogTimer = document.getElementById('dialog_timer_container');
+let dialogTimerText = document.getElementById('dialog_view__timer');
+
 let racerView = document.getElementById('racer_view');
 let textView = document.getElementById('game_view__text');
 let inputView = document.getElementById('game_view__input');
+let resetButtonView = document.getElementById('button_view__reset');
 
-let words = 'Lorem ipsum dolor sit amet';
 let wordList = [];
-let wordIndex = 0;
+let racers = {};
+let curRacer;
 
-let racers = [];
+socket.on('join', player => {
+    racers[player.id] = player;
+    generateRacerCar(player);
+});
 
-generateText(words);
-for(let i = 0 ; i < 10; i ++) {
-    generateRacerCar({id: i, name: 'stipen'});
+socket.on('leave', player => {
+    const racerDiv = document.getElementById(getRacerId(player.id));
+    racerDiv.parentNode.removeChild(racerDiv);
+    delete racers[player.id];
+});
+
+socket.on('players', players => {
+    racers = players;
+    Object.keys(players).forEach(key => {
+        const current = players[key];
+        generateRacerCar(current);
+    });
+})
+
+socket.on('start', word => {
+    toggleInput(true);
+    generateText(word);
+    startTimer();
+});
+
+socket.on('update', player => {
+    updateRacer(player);
+    if (player.id === curRacer.id) {
+        curRacer = player;
+        if (player.rank > 0) toggleButton(true);
+    }
+});
+
+function startTimer() {
+    dialogTimer.classList.remove('invisible');
+    let i = 1;
+    const interval = setInterval(function () {
+        dialogTimerText.innerText = `${3 - i++}`;
+        if (i > 3) {
+            clearInterval(interval);
+            dialogTimer.className += ' invisible';
+            inputView.focus();
+        }
+    }, 1000)
 }
+
+dialogNameButton.addEventListener('click', () => {
+    let name = dialogNameInput.value;
+    generatePlayer(name);
+    socket.emit('join-game', curRacer);
+    dialogName.className += ' invisible';
+});
+
+resetButtonView.addEventListener('click', () => {
+    Object.keys(racers).forEach(key => {
+        let current = racers[key];
+        removeRacer(current);
+    });
+
+    racers = {};
+    clearText();
+    toggleButton(false);
+    generatePlayer(curRacer.name);
+    socket.emit('join-game', curRacer);
+});
 
 inputView.addEventListener('input', event => {
     inputView.value = inputView.value.replace(/\s/g, '');
-    let currentWord = wordList[wordIndex];
+    let currentWord = wordList[curRacer.wordIndex];
     let currentInput = inputView.value;
-
     updateChars(currentInput, currentWord);
 
     if (event.data === ' ') {
         if (currentInput === currentWord) {
             inputView.value = '';
             updateActiveWord();
-            updateRacer({id: 0, name: 'stipen'});
+            updateRacer(curRacer);
+            socket.emit('update', curRacer);
         }
     }
 });
+
+function removeRacer(racer) {
+    const racerDiv = document.getElementById(getRacerId(racer.id));
+    racerDiv.parentNode.removeChild(racerDiv);
+}
+
+function clearText() {
+    for (let wIndex = 0; wIndex < wordList.length; wIndex++) {
+        const currentWord = wordList[wIndex];
+        const wordDiv = document.getElementById(getWordId(wIndex));
+        for (let cIndex = 0; cIndex < currentWord.length; cIndex++) {
+            const charSpan = document.getElementById(getCharId(wIndex, cIndex));
+            charSpan.parentNode.removeChild(charSpan);
+        }
+        wordDiv.parentNode.removeChild(wordDiv);
+    }
+}
+
+function updateRacer(racer) {
+    const racerCar = document.getElementById(getRacerCarId(racer.id));
+    const racerName = document.getElementById(getRacerNameId(racer.id));
+
+    let rank = racer.rank > 0 ? `- Rank: ${racer.rank}` : '';
+    let wpm = racer.wpm ? `- ${racer.wpm} wpm` : '';
+
+    racerName.innerText = `${racer.name} ${wpm} ${rank}`;
+    racerCar.style.marginLeft = `${(racer.wordIndex) / wordList.length * 96}%`;
+}
 
 function updateChars(input, currentWord) {
     for (let i = 0; i < currentWord.length; i++) {
@@ -41,7 +138,7 @@ function updateChars(input, currentWord) {
 }
 
 function setCharCorrection(index, correction) {
-    const charSpan = document.getElementById(getCharId(wordIndex, index));
+    const charSpan = document.getElementById(getCharId(curRacer.wordIndex, index));
     if (correction === 'correct' || correction === 'incorrect') {
         charSpan.className += ` ${correction}`;
     } else {
@@ -50,32 +147,20 @@ function setCharCorrection(index, correction) {
 }
 
 function updateActiveWord() {
-    for (let i = 0; i < wordList[wordIndex].length; i++) {
-        const charSpan = document.getElementById(getCharId(wordIndex, i));
+    for (let i = 0; i < wordList[curRacer.wordIndex].length; i++) {
+        const charSpan = document.getElementById(getCharId(curRacer.wordIndex, i));
         charSpan.classList.remove('active', 'correct', 'incorrect');
     }
 
-    if (++wordIndex >= wordList.length) {
+    if (++curRacer.wordIndex >= wordList.length) {
         toggleInput(false);
         return;
     }
 
-    for (let i = 0; i < wordList[wordIndex].length; i++) {
-        const charSpan = document.getElementById(getCharId(wordIndex, i));
+    for (let i = 0; i < wordList[curRacer.wordIndex].length; i++) {
+        const charSpan = document.getElementById(getCharId(curRacer.wordIndex, i));
         charSpan.className += ' active';
     }
-}
-
-function updateRacer(racer) {
-    const racerCar = document.getElementById(getRacerCarId(racer.id));
-    const racerName = document.getElementById(getRacerNameId(racer.id));
-
-    racerName.innerText = `${racer.name} - ${Math.floor(Math.random() * 100)} wpm`;
-    racerCar.style.marginLeft = `${(wordIndex) / wordList.length * 96}%`;
-}
-
-function toggleInput(isEnabled) {
-    inputView.disabled = isEnabled;
 }
 
 function generateRacerCar(racer) {
@@ -122,6 +207,29 @@ function generateText(text) {
 
         textView.appendChild(wordSpan);
     }
+}
+
+function generatePlayer(name) {
+    let id = Math.floor(Math.random() * 100000);
+    curRacer = {
+        id: id,
+        rank: -1,
+        name: name,
+        wordIndex: 0,
+        wpm: undefined,
+    }
+}
+
+function toggleButton(isShown) {
+    if (isShown) {
+        resetButtonView.className += ' visible';
+    } else {
+        resetButtonView.classList.remove('visible');
+    }
+}
+
+function toggleInput(isEnabled) {
+    inputView.disabled = !isEnabled;
 }
 
 function getRacerId(racerId) {

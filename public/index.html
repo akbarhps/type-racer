@@ -5,19 +5,33 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.js"></script>
     <link rel="stylesheet" href="styles.css">
     <title>Balapan Ngetik</title>
 </head>
 
 <body>
-<div class="container">
-    <div id="racer_view">
+<div id="dialog_input_container" class="dialog_container">
+    <div class="dialog_view">
+        <p>Selamat Datang Prajurit 🤪</p>
+        <input type="text" id="dialog_view__input" placeholder="Masukkan Nama Anda">
+        <button id="dialog_view__button">Mulai</button>
+    </div>
+</div>
+<div id="dialog_timer_container" class="dialog_container invisible">
+    <div class="dialog_view">
+        <p>Game akan dimulai dalam</p>
+        <p id="dialog_view__timer">3</p>
+    </div>
+</div>
+<div class="game_container">
+    <div id="racer_view"></div>
+    <div class="button_view">
+        <button id="button_view__reset" class="buttons">Main Lagi</button>
     </div>
     <div id="game_view">
         <div id="game_view__text"></div>
-        <input id="game_view__input" disabled placeholder="Ketik disini...">
-    </div>
-    <div class="footer_view">
+        <input type="text"  id="game_view__input" disabled placeholder="Ketik disini...">
     </div>
 </div>
 <script src="script.js"></script>

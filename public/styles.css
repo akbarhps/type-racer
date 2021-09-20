@@ -1,23 +1,72 @@
 * {
     padding: 0;
     margin: auto;
-    max-width: 720px;
     background-color: black;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-.container {
+.game_container {
+    width: 100%;
     height: 100vh;
+    max-width: 720px;
     display: grid;
-    grid-template-rows: 50vh 40vh 10vh;
+    grid-template-rows: 50vh 9vh 40vh;
+}
+
+.dialog_container {
+    z-index: 9;
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dialog_view {
+    width: 400px;
+    height: 200px;
+    margin: auto;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    border: white dashed thin;
+}
+
+#dialog_view__input {
+    width: 100%;
+    height: 30px;
+    color: white;
+    border: 1px solid #eee;
+}
+
+#dialog_view__button {
+    width: 100%;
+    height: 30px;
+    color: white;
+    cursor: pointer;
+    border: white solid thin;
+}
+
+#dialog_view__button:hover {
+    background-color: white;
+    color: black;
+}
+
+#dialog_view__timer {
+    font-size: 2rem;
 }
 
 #racer_view {
     height: 100%;
     width: 100%;
-    padding-right: 5px;
+    z-index: 2;
+    padding: 0 5px;
     overflow-x: hidden;
-    margin-bottom: 20px;
+    border: white solid thin;
 }
 
 .racers {
@@ -28,16 +77,16 @@
 
 .racer_track {
     width: 100%;
-    padding-bottom: 3px;
     border-bottom: white dashed thin;
+    padding: 8px 0;
 }
 
 .racer_car {
     width: 30px;
     height: 20px;
-    border-radius: 0 10px 10px 0;
     margin-left: 0;
     background-color: white;
+    border-radius: 0 10px 10px 0;
 }
 
 #game_view {
@@ -46,13 +95,25 @@
     height: 100%;
     display: grid;
     border: white solid thin;
+    padding: 0 5px;
     border-spacing: 8px;
     grid-template-rows: auto 10vh;
 }
 
-.footer_view {
+.button_view {
     width: 100%;
     height: 100%;
+    display: flex;
+}
+
+.buttons {
+    height: 60%;
+    color: white;
+    padding: 0 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    border: white solid thin;
+    display: none;
 }
 
 #game_view__text {
@@ -87,6 +148,14 @@
 
 .active {
     text-decoration: underline;
+}
+
+.invisible {
+    display: none !important;
+}
+
+.visible {
+    display: initial !important;
 }
 
 ::-webkit-scrollbar {
