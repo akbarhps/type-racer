@@ -1,8 +1,9 @@
 let socket = io.connect(window.location.origin);
 
-let dialogName = document.getElementById('dialog_input_container');
-let dialogNameInput = document.getElementById('dialog_view__input');
-let dialogNameButton = document.getElementById('dialog_view__button');
+let dialogJoin = document.getElementById('dialog_join_container');
+let dialogJoinUsername = document.getElementById('dialog_view__username');
+let dialogJoinRoomId = document.getElementById('dialog_view__room_id');
+let dialogJoinButton = document.getElementById('dialog_view__button');
 
 let dialogTimer = document.getElementById('dialog_timer_container');
 let dialogTimerText = document.getElementById('dialog_view__timer');
@@ -10,7 +11,10 @@ let dialogTimerText = document.getElementById('dialog_view__timer');
 let racerView = document.getElementById('racer_view');
 let textView = document.getElementById('game_view__text');
 let inputView = document.getElementById('game_view__input');
-let resetButtonView = document.getElementById('button_view__reset');
+
+let buttonViewResetGame = document.getElementById('button_view__reset');
+let buttonViewChangeRoom = document.getElementById('button_view__change_room');
+let buttonViewRoomId = document.getElementById('button_view__room_id');
 
 let wordList = [];
 let racers = {};
@@ -27,26 +31,36 @@ socket.on('leave', player => {
     delete racers[player.id];
 });
 
-socket.on('players', players => {
-    racers = players;
-    Object.keys(players).forEach(key => {
-        const current = players[key];
+socket.on('players', data => {
+    racers = data.players;
+    curRacer.roomId = data.roomId;
+    buttonViewRoomId.innerText = `Room Id: ${data.roomId}`;
+    Object.keys(racers).forEach(key => {
+        const current = racers[key];
         generateRacerCar(current);
     });
 })
 
 socket.on('start', word => {
+    curRacer.wordIndex = 0;
+    clearText();
+    resetRacer();
+    toggleButton(false);
     toggleInput(true);
     generateText(word);
     startTimer();
 });
 
 socket.on('update', player => {
-    updateRacer(player);
     if (player.id === curRacer.id) {
         curRacer = player;
         if (player.rank > 0) toggleButton(true);
     }
+    updateRacer(player);
+});
+
+socket.on('game-over', () => {
+    buttonViewResetGame.className += ' visible';
 });
 
 function startTimer() {
@@ -62,23 +76,21 @@ function startTimer() {
     }, 1000)
 }
 
-dialogNameButton.addEventListener('click', () => {
-    let name = dialogNameInput.value;
-    generatePlayer(name);
+dialogJoinButton.addEventListener('click', () => {
+    let name = dialogJoinUsername.value;
+    let roomId = dialogJoinRoomId.value;
+    generatePlayer(roomId, name);
     socket.emit('join-game', curRacer);
-    dialogName.className += ' invisible';
+    dialogJoin.className += ' invisible';
 });
 
-resetButtonView.addEventListener('click', () => {
-    Object.keys(racers).forEach(key => {
-        let current = racers[key];
-        removeRacer(current);
-    });
+buttonViewResetGame.addEventListener('click', () => {
+    socket.emit('restart', curRacer);
+});
 
-    racers = {};
-    clearText();
-    toggleButton(false);
-    generatePlayer(curRacer.name);
+buttonViewChangeRoom.addEventListener('click', () => {
+    resetUI();
+    curRacer.roomId = undefined;
     socket.emit('join-game', curRacer);
 });
 
@@ -97,6 +109,15 @@ inputView.addEventListener('input', event => {
         }
     }
 });
+
+function resetRacer() {
+    Object.keys(racers).forEach(key => {
+        const racer = racers[key];
+        racer.wordIndex = 0;
+        racer.rank = -1;
+        updateRacer(racer);
+    });
+}
 
 function removeRacer(racer) {
     const racerDiv = document.getElementById(getRacerId(racer.id));
@@ -209,10 +230,11 @@ function generateText(text) {
     }
 }
 
-function generatePlayer(name) {
+function generatePlayer(roomId, name) {
     let id = Math.floor(Math.random() * 100000);
     curRacer = {
         id: id,
+        roomId: roomId,
         rank: -1,
         name: name,
         wordIndex: 0,
@@ -222,14 +244,26 @@ function generatePlayer(name) {
 
 function toggleButton(isShown) {
     if (isShown) {
-        resetButtonView.className += ' visible';
+        buttonViewChangeRoom.className += ' visible';
     } else {
-        resetButtonView.classList.remove('visible');
+        buttonViewResetGame.classList.remove('visible');
+        buttonViewChangeRoom.classList.remove('visible');
     }
 }
 
 function toggleInput(isEnabled) {
     inputView.disabled = !isEnabled;
+}
+
+function resetUI() {
+    Object.keys(racers).forEach(key => {
+        let current = racers[key];
+        removeRacer(current);
+    });
+
+    racers = {};
+    clearText();
+    toggleButton(false);
 }
 
 function getRacerId(racerId) {

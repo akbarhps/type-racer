@@ -39,12 +39,17 @@ class Player {
 }
 
 class Game {
-    id = randomString(30);
+    id;
     word;
     wordLength;
+    minPlayer = 2;
     players = {};
     playerRank = [];
     isPlaying = false;
+
+    constructor(id) {
+        this.id = id || randomString(5);
+    }
 
     joinGame(player) {
         this.players[player.id] = new Player(player.id, player.name);
@@ -55,13 +60,25 @@ class Game {
     }
 
     isJoinAble() {
-        return this.countPlayer() <= 2 && !this.isPlaying;
+        return this.countPlayer() <= this.minPlayer && !this.isPlaying;
     }
 
     startGame() {
         this.word = randomizeWord();
         this.wordLength = this.word.split(' ').length;
         this.isPlaying = true;
+    }
+
+    isGameOver() {
+        return this.playerRank.length === this.countPlayer();
+    }
+
+    resetGame() {
+        if (!this.isGameOver()) return false;
+        this.word = randomizeWord();
+        this.wordLength = this.word.split(' ').length;
+        this.playerRank = [];
+        return true;
     }
 
     updatePlayerProgress(id) {
@@ -82,7 +99,7 @@ class Game {
     }
 }
 
-let games = [];
+let games = {};
 
 io.sockets.on("connection", socket => {
     let currentGame;
@@ -92,25 +109,39 @@ io.sockets.on("connection", socket => {
         currentGame = undefined;
         currentPlayer = player;
 
-        for (let game of games) {
-            if (game.isJoinAble()) {
-                currentGame = game;
-                break;
+        if (player.roomId) {
+            currentGame = games[player.roomId];
+        } else {
+            let keys = Object.keys(games);
+            for (let key of keys) {
+                const game = games[key];
+                if (game.isJoinAble()) {
+                    currentGame = game;
+                    break;
+                }
             }
         }
 
         if (!currentGame) {
-            currentGame = new Game();
-            games.push(currentGame);
+            currentGame = new Game(player.roomId);
+            games[currentGame.id] = currentGame;
         }
 
         currentGame.joinGame(currentPlayer);
         socket.join(currentGame.id);
-        socket.emit('players', currentGame.players);
+        socket.emit('players', {roomId: currentGame.id, players: currentGame.players});
         socket.broadcast.to(currentGame.id).emit('join', currentPlayer);
 
-        if (currentGame.countPlayer() >= 2) {
+        if (currentGame.countPlayer() >= currentGame.minPlayer) {
             currentGame.startGame();
+            socket.emit('start', currentGame.word);
+            socket.broadcast.to(currentGame.id).emit('start', currentGame.word);
+        }
+    });
+
+    socket.on('restart', () => {
+        if (!currentGame) return;
+        if (currentGame.resetGame()) {
             socket.emit('start', currentGame.word);
             socket.broadcast.to(currentGame.id).emit('start', currentGame.word);
         }
@@ -118,12 +149,17 @@ io.sockets.on("connection", socket => {
 
     socket.on('update', player => {
         currentGame.updatePlayerProgress(player.id);
-        let current = currentGame.checkIfWinner(player)
-        socket.broadcast.to(currentGame.id).emit('update', current);
+        let current = currentGame.checkIfWinner(player);
         socket.emit('update', current);
+        socket.broadcast.to(currentGame.id).emit('update', current);
+        if (currentGame.isGameOver()) {
+            socket.emit('game-over');
+            socket.broadcast.to(currentGame.id).emit('game-over');
+        }
     });
 
     socket.on("disconnect", () => {
+        if (!currentGame) return;
         socket.broadcast.to(currentGame.id).emit('leave', currentPlayer);
         currentGame.deletePlayer(currentPlayer.id);
         currentPlayer = null;

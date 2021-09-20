@@ -36,14 +36,14 @@
     border: white dashed thin;
 }
 
-#dialog_view__input {
+.dialog_view__input {
     width: 100%;
     height: 30px;
     color: white;
     border: 1px solid #eee;
 }
 
-#dialog_view__button {
+.dialog_view__button {
     width: 100%;
     height: 30px;
     color: white;
@@ -87,6 +87,10 @@
     margin-left: 0;
     background-color: white;
     border-radius: 0 10px 10px 0;
+}
+
+#button_view__room_id {
+    color: white;
 }
 
 #game_view {
