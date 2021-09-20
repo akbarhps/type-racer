@@ -145,7 +145,7 @@ function updateRacer(racer) {
     let wpm = racer.wpm ? `- ${racer.wpm} wpm` : '';
 
     racerName.innerText = `${racer.name} ${wpm} ${rank}`;
-    racerCar.style.marginLeft = `${(racer.wordIndex) / wordList.length * 96}%`;
+    racerCar.style.width = `${(racer.wordIndex) / wordList.length * 100}%`;
 }
 
 function updateChars(input, currentWord) {
