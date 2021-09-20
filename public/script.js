@@ -52,11 +52,11 @@ socket.on('start', word => {
 });
 
 socket.on('update', player => {
-    if (player.id === curRacer.id) {
-        curRacer = player;
-        if (player.rank > 0) toggleButton(true);
+    if (player.id !== curRacer.id) {
+        updateRacer(player);
+    } else if(player.rank > 0) {
+        toggleButton(true);
     }
-    updateRacer(player);
 });
 
 socket.on('game-over', () => {
