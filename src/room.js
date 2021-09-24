@@ -80,6 +80,7 @@ module.exports = class Room {
         });
 
         this.resetVoter = 0;
+        this.currentRank = 1;
         this.start(socket);
     }
 
