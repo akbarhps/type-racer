@@ -81,7 +81,7 @@ formSinglePlayerButton.addEventListener('click', () => {
     const phrase = generateRandomPhrase();
     const username = formUsername.value || '';
     generateGameContent(phrase);
-    generateRacer({id: 0, username: username}, true);
+    if (!racers[0]) generateRacer({id: 0, username: username}, true);
     startTimer();
     isSinglePlayer = true;
     formView.className += ' invisible';
