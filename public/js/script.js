@@ -78,6 +78,7 @@ socket.on('voted', playerId => {
 });
 
 formSinglePlayerButton.addEventListener('click', () => {
+    resetState();
     const phrase = generateRandomPhrase();
     const username = formUsername.value || '';
     generateGameContent(phrase);
