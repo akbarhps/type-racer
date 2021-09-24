@@ -5,7 +5,7 @@
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-.game_container {
+.game_view {
     width: 100%;
     height: 100vh;
     max-width: 720px;
@@ -13,60 +13,77 @@
     grid-template-rows: 50vh 9vh 40vh;
 }
 
-.dialog_container {
+.view {
     z-index: 9;
     width: 100%;
     height: 100vh;
-    position: fixed;
     display: grid;
+    position: fixed;
     align-content: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.7);
 }
 
-.dialog_view {
-    width: 400px;
-    height: 200px;
-    margin: auto;
+.view > div {
+    width: 600px;
+    height: 400px;
     color: white;
-    padding: 20px;
+    padding: 40px;
     display: flex;
     flex-direction: column;
-    background-color: black;
+    font-size: 1.5rem;
+    margin-top: 20px;
+    font-weight: bold;
     border: white solid thin;
 }
 
-.dialog_view__input {
+.timer_view {
+    background-color: rgba(0,0,0,0.6);
+}
+
+.timer_view > div {
+    width: 400px;
+    height: 150px;
+    border: white solid thin;
+    border-bottom: white solid thick;
+}
+
+.form_input {
     width: 100%;
-    height: 30px;
+    height: 50px;
     color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
     border-style: none;
-    border-bottom: white solid thin;
+    border-bottom: white solid thick;
 }
 
-.dialog_view__input:focus {
+.form_input:focus {
     outline: none;
-    border-bottom: #4b4bd7 solid thin;
+    border-bottom: #3b3b9a solid thick;
 }
 
-.dialog_view__button {
+.form_button {
     width: 100%;
-    height: 30px;
+    height: 50px;
     color: white;
     cursor: pointer;
-    border: white solid thin;
+    font-size: 1.2rem;
+    border: none;
+    border-left: white solid thick;
+    border-right: white solid thick;
+    transition: all .2s ease-in-out;
 }
 
-#dialog_view__button:hover {
+.form_button:hover {
     background-color: white;
     color: black;
 }
 
-#dialog_view__timer {
-    font-size: 2rem;
+#timer_view__countdown {
+    font-size: 3rem !important;
 }
 
-#racer_view {
+#game_view__racers {
     height: 100%;
     width: 100%;
     z-index: 2;
@@ -80,26 +97,24 @@
     margin-bottom: 10px;
 }
 
-.racer_track {
+.racer-track {
     width: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
     border-bottom: white dashed thin;
-    padding: 8px 0;
+    padding-bottom: 25px;
 }
 
-.racer_car {
-    width: 10px;
+.racer-car {
+    width: 15px;
     height: 20px;
-    margin-left: 0;
-    background-color: white;
-    border-radius: 0 10px 10px 0;
+    font-size: 2rem;
+    margin-left: 25px;
+    transform: scale(-1, 1);
+    background-color: transparent;
     transition: all .2s ease-in-out;
 }
 
-#button_view__room_id {
-    color: white;
-}
-
-#game_view {
+#game_view__content {
     z-index: 2;
     width: 100%;
     height: 100%;
@@ -109,7 +124,7 @@
     grid-template-rows: auto 10vh;
 }
 
-.button_view {
+.game_view__dashboard {
     width: 100%;
     height: 100%;
     z-index: 3;
@@ -118,21 +133,28 @@
     border-bottom: white solid thin;
 }
 
-.buttons {
-    height: 60%;
+.dashboard_button {
     color: white;
-    padding: 0 10px;
+    height: 60%;
+    min-width: 130px;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1rem;
     border: white solid thin;
+    border-bottom: white solid thick;
+    transition: all .2s ease-in-out;
     display: none;
 }
 
-#game_view__text {
+.dashboard_button:hover {
+    color: black;
+    background-color: white;
+}
+
+#content__text {
     margin: 30px;
 }
 
-#game_view__input {
+#content__input {
     width: 92%;
     padding: 0 20px;
     height: 70%;
@@ -172,6 +194,7 @@
 
 ::-webkit-scrollbar {
     width: 3px;
+    height: 3px;
 }
 
 ::-webkit-scrollbar-track {

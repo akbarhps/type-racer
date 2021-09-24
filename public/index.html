@@ -7,38 +7,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <script src="js/racer.js"></script>
+    <script src="js/character.js"></script>
+    <script src="js/helper.js"></script>
+    <script src="js/word.js"></script>
     <title>Balapan Ngetik</title>
 </head>
 
 <body>
-<div id="dialog_join_container" class="dialog_container">
-    <div class="dialog_view">
-        <p>Selamat Datang Prajurit 🤪</p>
-        <input type="text" id="dialog_view__room_id" class="dialog_view__input" placeholder="Masukkan Id Ruangan (Opsional)">
-        <input type="text" id="dialog_view__username" class="dialog_view__input" placeholder="Masukkan Username">
-        <button id="dialog_view__button" class="dialog_view__button">Mulai</button>
+<div id="form_view" class="view">
+    <div>
+        <p>Selamat Datang Tukang Ketik Fotocopy 👋</p>
+        <input id="form_view__roomId" class="form_input" maxlength="8" placeholder="Room Id (Opsional)">
+        <input id="form_view__username" class="form_input" maxlength="15" placeholder="Username">
+        <button id="form_view__singlePlayer" class="form_button">Single Player</button>
+        <button id="form_view__multiPlayer" class="form_button">Multiplayer</button>
     </div>
 </div>
-<div id="dialog_timer_container" class="dialog_container invisible">
-    <div class="dialog_view">
+
+<div id="timer_view" class="view timer_view invisible">
+    <div>
         <p>Game akan dimulai dalam</p>
-        <p id="dialog_view__timer">3</p>
+        <p id="timer_view__countdown">3</p>
     </div>
 </div>
-<div class="game_container">
-    <div id="racer_view"></div>
-    <div class="button_view">
-        <p id="button_view__room_id"></p>
-        <button id="button_view__single" class="buttons visible">Main Sendiri</button>
-        <button id="button_view__reset" class="buttons">Main Lagi</button>
-        <button id="button_view__change_room" class="buttons">Ganti Ruangan</button>
+
+<div class="game_view">
+    <div id="game_view__racers"></div>
+    <div class="game_view__dashboard">
+        <button id="dashboard__back" class="dashboard_button visible">Kembali</button>
+        <p id="dashboard__roomId" style="color: white"></p>
+        <button id="dashboard__replay" class="dashboard_button">Main Lagi</button>
     </div>
-    <div id="game_view">
-        <div id="game_view__text"></div>
-        <input type="text"  id="game_view__input" disabled placeholder="Ketik disini...">
+    <div id="game_view__content">
+        <div id="content__text"></div>
+        <input id="content__input" placeholder="Ketik disini...">
     </div>
 </div>
-<script src="script.js"></script>
+<script src="js/script.js"></script>
 </body>
 
 </html>
