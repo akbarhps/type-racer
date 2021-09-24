@@ -28,7 +28,6 @@ let currentRacer;
 let isSinglePlayer = false;
 
 socket.on('roomInfo', data => {
-    console.log(data);
     clearState();
     dashboardRoomId.innerText = `Room Id: ${data.roomId}`;
     if (data.phrase) wordLength = data.phrase.split(' ').length;

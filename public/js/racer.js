@@ -46,7 +46,6 @@ class Racer {
     }
 
     update(rank = 0) {
-        console.log(this.progress + 1, wordLength);
         this.htmlCar.style.marginLeft = `${++this.progress / wordLength * 99}%`;
         if (rank > 0) this.htmlName.innerText += ` - Rank ${rank}`;
     }
