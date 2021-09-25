@@ -29,6 +29,8 @@ let isSinglePlayer = false;
 
 socket.on('roomInfo', data => {
     clearState();
+    console.log(data);
+
     dashboardRoomId.innerText = `Room Id: ${data.roomId}`;
     if (data.phrase) wordLength = data.phrase.split(' ').length;
 
@@ -45,9 +47,7 @@ socket.on('roomInfo', data => {
 
 socket.on('join', data => {
     if (racers[data.id]) return;
-    let racer = new Racer(data.id, data.username, data.isWaiting);
-    racers[racer.id] = racer;
-    gameViewRacers.appendChild(racer.htmlContainer);
+    generateRacer(data, false);
 });
 
 socket.on('left', id => {
@@ -64,24 +64,21 @@ socket.on('start', phrase => {
 });
 
 socket.on('update', data => {
-    let current = racers[data.id];
-    current.update(data.rank);
-    if (data.id === currentRacer.id) {
+    racers[data.id].update(data.rank);
+    if (racers[data.id].isMe) {
         dashboardReplayButton.className += ' visible';
     }
 });
 
 socket.on('voted', playerId => {
     let current = racers[playerId];
-    if (current) current.setToWaitingState();
+    if (current) current.state = 'rematch';
 });
 
 formSinglePlayerButton.addEventListener('click', () => {
     resetState();
-    const phrase = generateRandomPhrase();
-    const username = formUsername.value || '';
-    generateGameContent(phrase);
-    if (!racers[0]) generateRacer({id: 0, username: username}, true);
+    generateGameContent(generateRandomPhrase());
+    if (!racers[0]) generateRacer({id: 0, username: formUsername.value || 'Guest'}, true);
     startTimer();
     isSinglePlayer = true;
     formView.className += ' invisible';
@@ -117,13 +114,13 @@ dashboardBack.addEventListener('click', () => {
 contentInput.addEventListener('input', e => {
     contentInput.value = contentInput.value.trim();
     let word = wordList[wordIndex];
-    word.update(contentInput.value);
+    word.updateCorrection(contentInput.value);
 
-    if (e.data === ' ' && word.word === contentInput.value) {
+    if (e.data === ' ' && word.elementText === contentInput.value) {
         contentInput.value = '';
-        word.toggleActivation(false);
+        word.active = false;
         if (++wordIndex < wordList.length) {
-            wordList[wordIndex].toggleActivation(true);
+            wordList[wordIndex].active = true;
             currentRacer.update();
         } else if (isSinglePlayer) {
             dashboardReplayButton.className += ' visible';
@@ -135,46 +132,42 @@ contentInput.addEventListener('input', e => {
 
 function clearState() {
     Object.keys(racers).forEach(key => {
-        let current = racers[key];
-        current.remove();
+        racers[key].remove();
     });
-
     racers = {};
     resetState();
 }
 
 function resetState() {
-    Object.keys(racers).forEach(key => {
-        let current = racers[key];
-        current.isWaiting = false;
-        current.reset();
-    });
-
-    for (let word of wordList) {
-        word.remove();
-    }
-
+    wordList.forEach(word => word.remove());
     wordList = [];
-    wordLength = 0;
     wordIndex = 0;
+    wordLength = 0;
+    Object.keys(racers).forEach(key => {
+        racers[key].reset();
+    });
 }
 
 function generateGameContent(phrase) {
-    let split = phrase.split(' ');
-    wordLength = split.length;
-    for (let i = 0; i < split.length; i++) {
-        const currentWord = split[i];
-        const word = new Word(currentWord, i);
-        contentTexts.appendChild(word.html);
+    phrase = phrase.split(' ');
+    wordLength = phrase.length;
+    for (let i = 0; i < phrase.length; i++) {
+        let word = new WordView(i, phrase[i]);
         wordList.push(word);
+        contentTexts.appendChild(word);
     }
 }
 
-function generateRacer(data, isCurrentPlayer) {
-    let racer = new Racer(data.id, data.username, data.isWaiting || false, isCurrentPlayer);
-    racers[racer.id] = racer;
-    gameViewRacers.appendChild(racer.htmlContainer);
-    if (isCurrentPlayer) currentRacer = racer;
+function generateRacer(data, isMe) {
+    let racer = new RacerView(data.username, isMe);
+
+    gameViewRacers.appendChild(racer);
+    racers[data.id] = racer;
+
+    racer.state = data.isWaiting ? 'waiting' : '';
+    racer.progress = data.progress;
+    racer.rank = data.rank;
+    if (isMe) currentRacer = racer;
 }
 
 function startTimer() {

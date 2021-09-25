@@ -172,18 +172,6 @@
     color: white;
 }
 
-.correct {
-    color: #00ff00;
-}
-
-.incorrect {
-    color: red;
-}
-
-.active {
-    text-decoration: underline;
-}
-
 .invisible {
     display: none !important;
 }
@@ -205,4 +193,44 @@
 ::-webkit-scrollbar-thumb {
     background: white;
     border-radius: 10px;
+}
+
+
+racer-view {
+    width: 100%;
+    padding: 5px 0;
+    color: white;
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 1fr;
+    border-bottom: white dashed thin;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+label-view {
+    width: 100%;
+    padding: 0 5px;
+    display: flex;
+    align-content: space-between;
+    justify-content: space-between;
+    background-color: transparent;
+}
+
+label-view > div  {
+    margin-left: 0;
+    background-color: transparent;
+}
+
+label-view > span, label-view > div > span {
+    padding: 0 10px;
+    margin-right: 10px;
+    border-radius: 10px;
+}
+
+car-view {
+    font-size: 30px;
+    background-color: transparent;
+    margin-left: 0;
+    transform: scale(-1, 1);
+    transition: all .2s ease-in-out;
 }

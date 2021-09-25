@@ -14,5 +14,6 @@ module.exports = class Player {
     reset() {
         this.rank = 0;
         this.progress = 0;
+        this.isWaiting = false;
     }
 }

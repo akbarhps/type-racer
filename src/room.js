@@ -21,7 +21,6 @@ module.exports = class Room {
     }
 
     join(socket, player) {
-        player.isWaiting = this.playersCount < 2;
         if (this.isAvailable()) {
             this.players[player.id] = player;
             this.playersCount++;
@@ -44,6 +43,10 @@ module.exports = class Room {
     }
 
     start(socket) {
+        Object.keys(this.players).forEach(key => {
+            this.players[key].isWaiting = false;
+        });
+
         this.isPlaying = true;
         this.phrase = generateRandomWord();
         this.phraseLength = this.phrase.split(' ').length;
@@ -60,7 +63,9 @@ module.exports = class Room {
     voteReset(socket, playerId) {
         if (this.playersCount < 2) this.isPlaying = false;
         if (this.players[playerId]) this.resetVoter++;
-        if (this.playersCount <= 2 && this.resetVoter === 2) {
+        if (this.playersCount === 1 && this.resetVoter === 1) {
+            this.reset(socket);
+        } else if (this.playersCount <= 2 && this.resetVoter === 2) {
             this.reset(socket);
         } else if (this.playersCount > 2 && this.resetVoter >= Math.ceil(this.playersCount / 2)) {
             this.reset(socket);
@@ -73,6 +78,7 @@ module.exports = class Room {
         for (let player of this.waitingList) {
             this.players[player.id] = player;
             this.playersCount++;
+            this.waitingList.splice(this.waitingList.indexOf(player), 1);
         }
 
         Object.keys(this.players).forEach(key => {
@@ -91,6 +97,10 @@ module.exports = class Room {
         }
         this.playersCount--;
         this.broadcastToRoom(socket, 'left', player.id);
+
+        if (!this.playersCount && !this.waitingList.length) {
+            this.isPlaying = false;
+        }
     }
 
     broadcastToRoom(socket, destination, content, replyToSender = false) {

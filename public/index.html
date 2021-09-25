@@ -7,10 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.js"></script>
     <link rel="stylesheet" href="styles.css">
-    <script src="js/racer.js"></script>
-    <script src="js/character.js"></script>
-    <script src="js/helper.js"></script>
-    <script src="js/word.js"></script>
+    <!--    racer   -->
+    <script src="./racer/RacerLabelView.js"></script>
+    <script src="./racer/RacerCarView.js"></script>
+    <script src="./racer/RacerView.js"></script>
+    <!--    word & character    -->
+    <script src="./word/WordView.js"></script>
+    <script src="./word/CharacterView.js"></script>
     <title>Balapan Ngetik</title>
 </head>
 
@@ -35,7 +38,7 @@
 <div class="game_view">
     <div id="game_view__racers"></div>
     <div class="game_view__dashboard">
-        <button id="dashboard__back" class="dashboard_button visible">Kembali</button>
+        <button id="dashboard__back" class="dashboard_button visible">Keluar</button>
         <p id="dashboard__roomId" style="color: white"></p>
         <button id="dashboard__replay" class="dashboard_button">Main Lagi</button>
     </div>
@@ -44,7 +47,7 @@
         <input id="content__input" placeholder="Ketik disini...">
     </div>
 </div>
-<script src="js/script.js"></script>
+<script src="script.js"></script>
 </body>
 
 </html>
