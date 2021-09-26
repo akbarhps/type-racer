@@ -26,8 +26,7 @@ const generateRandomId = (size) => {
 }
 
 const generateRandomWord = () => {
-    // return phrase[Math.floor(Math.random() * phrase.length)];
-    return 'test';
+    return phrase[Math.floor(Math.random() * phrase.length)];
 }
 
 module.exports = {generateRandomId, generateRandomWord};

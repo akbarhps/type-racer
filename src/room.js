@@ -98,7 +98,7 @@ module.exports = class Room {
         this.playersCount--;
         this.broadcastToRoom(socket, 'left', player.id);
 
-        if (!this.playersCount && !this.waitingList.length) {
+        if (this.playersCount < 2 && !this.waitingList.length) {
             this.isPlaying = false;
         }
     }
