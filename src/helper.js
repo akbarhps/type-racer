@@ -25,8 +25,8 @@ const generateRandomId = (size) => {
     return [...Array(size)].map(i => (~~(Math.random() * 36)).toString(36)).join('')
 }
 
-const generateRandomWord = () => {
+const generateRandomPhrase = () => {
     return phrase[Math.floor(Math.random() * phrase.length)];
 }
 
-module.exports = {generateRandomId, generateRandomWord};
+module.exports = {generateRandomId, generateRandomWord: generateRandomPhrase};
