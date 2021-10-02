@@ -33,14 +33,12 @@ socket.on('roomInfo', data => {
     dashboardRoomId.innerText = `Room Id: ${data.roomId}`;
     if (data.phrase) wordLength = data.phrase.split(' ').length;
 
-    Object.keys(data.players).forEach(key => {
-        let current = data.players[key];
-        generateRacer(current, current.id === data.playerId);
+    Object.values(data.players).forEach(player => {
+        generateRacer(player, player.id === data.playerId);
     });
 
-    Object.keys(data.waitingList).forEach(key => {
-        let current = data.waitingList[key];
-        generateRacer(current, current.id === data.playerId);
+    Object.values(data.waitingList).forEach(player => {
+        generateRacer(player, player.id === data.playerId);
     });
 });
 
@@ -50,10 +48,8 @@ socket.on('join', data => {
 });
 
 socket.on('left', id => {
-    if (racers[id]) {
-        racers[id].remove();
-        delete racers[id];
-    }
+    racers[id]?.remove();
+    delete racers[id];
 });
 
 socket.on('start', phrase => {
@@ -70,34 +66,37 @@ socket.on('update', data => {
 });
 
 socket.on('voted', playerId => {
-    let current = racers[playerId];
-    if (current) current.state = 'rematch';
+    racers[playerId]?.state = 'rematch';
 });
 
 formSinglePlayerButton.addEventListener('click', () => {
-    resetState();
+    generateRacer({
+        id: 0,
+        username: formUsername.value || 'Guest'
+    }, true);
     generateGameContent(generateRandomPhrase());
-    if (!racers[0]) generateRacer({id: 0, username: formUsername.value || 'Guest'}, true);
     startTimer();
+
     isSinglePlayer = true;
     formView.className += ' invisible';
-    dashboardRoomId.innerText = `Single Player Mode`;
-    while (gameViewRacers.childNodes.length > 1) gameViewRacers.removeChild(gameViewRacers.firstChild);
+    dashboardRoomId.innerText = 'Single Player Mode';
 });
 
 formMultiPlayerButton.addEventListener('click', () => {
     socket.connect();
-    const roomId = formRoomId.value;
-    socket.emit('join', {roomId: roomId, username: formUsername.value || 'Guest'});
+    socket.emit('join', {
+        roomId: formRoomId.value,
+        username: formUsername.value || 'Guest'
+    });
+
     isSinglePlayer = false;
     formView.className += ' invisible';
 });
 
 dashboardReplayButton.addEventListener('click', () => {
     if (isSinglePlayer) {
-        const phrase = generateRandomPhrase();
         resetState();
-        generateGameContent(phrase);
+        generateGameContent(generateRandomPhrase());
         startTimer();
     } else {
         socket.emit('vote');
@@ -107,6 +106,7 @@ dashboardReplayButton.addEventListener('click', () => {
 
 dashboardBack.addEventListener('click', () => {
     socket.disconnect();
+    clearState();
     formView.classList.remove('invisible');
 });
 
@@ -118,21 +118,31 @@ contentInput.addEventListener('input', e => {
     if (e.data === ' ' && word.elementText === contentInput.value) {
         contentInput.value = '';
         word.active = false;
-        if (++wordIndex < wordList.length) {
+        wordIndex++;
+
+        if (wordIndex < wordList.length) {
+            currentRacer.update();
             wordList[wordIndex].active = true;
-            currentRacer.update();
-        } else if (isSinglePlayer) {
-            dashboardReplayButton.className += ' visible';
-            currentRacer.update();
+        } else {
+            if (isSinglePlayer) {
+                currentRacer.update();
+                dashboardReplayButton.className += ' visible';
+            }
         }
-        if (!isSinglePlayer) socket.emit('update');
+
+        if (!isSinglePlayer) {
+            socket.emit('update');
+        }
     }
 });
 
 function clearState() {
-    Object.keys(racers).forEach(key => {
-        racers[key].remove();
+    dashboardReplayButton.classList.remove('visible');
+
+    Object.values(racers).forEach(racer => {
+        racer.remove();
     });
+
     racers = {};
     resetState();
 }
@@ -142,8 +152,8 @@ function resetState() {
     wordList = [];
     wordIndex = 0;
     wordLength = 0;
-    Object.keys(racers).forEach(key => {
-        racers[key].reset();
+    Object.values(racers).forEach(racer => {
+        racer.reset();
     });
 }
 
@@ -163,9 +173,9 @@ function generateRacer(data, isMe) {
     gameViewRacers.appendChild(racer);
     racers[data.id] = racer;
 
-    racer.state = data.isWaiting ? 'waiting' : '';
-    racer.progress = data.progress;
     racer.rank = data.rank;
+    racer.progress = data.progress;
+    racer.state = data.isWaiting ? 'waiting' : '';
     if (isMe) currentRacer = racer;
 }
 
@@ -185,8 +195,7 @@ function startTimer() {
     }, 1000)
 }
 
-function generateRandomPhrase()
-{
+function generateRandomPhrase() {
     let phrase = [
         'Yang terpenting, bukanlah seberapa besar mimpi kalian, melainkan seberapa besar upaya kalian mewujudkan mimpi itu',
         'Aku rasa hidupku seperti musik. Itu mungkin bukan musik yang bagus tapi tetap mempunyai bentuk dan irama.',
@@ -203,11 +212,11 @@ function generateRandomPhrase()
         'Jika kamu hanya membaca buku yang orang lain baca, kamu hanya bisa memikirkan apa yang orang lain pikir.',
         'Kenapa harus takut gelap kalau ada banyak hal indah yang hanya bisa dilihat sewaktu gelap?',
         'Tidak ada yang baru di bawah matahari. Semuanya sudah dilakukan sebelumnya.',
-        'Orang-orang biasanya melihat apa yang mereka cari, dan mendengar apa yang mereka ingin dengar. ',
+        'Orang-orang biasanya melihat apa yang mereka cari, dan mendengar apa yang mereka ingin dengar.',
         'Jika kita ibaratkan, maka peradaban manusia persis seperti roda. Terus berputar. Naik-turun. Mengikuti siklusnya.',
-        'Kalau hidup sekadar hidup, babi di hutan juga hidup. Kalau kerja sekadar bekerja, kera juga bekerja. ',
-        'Jika Anda melakukan sesuatu yang baik, setelah beberapa lama, tanpa anda pernah merasakannya, anda akan mulai untuk pamer. Setelah itu, anda tidak akan pernah dipandang baik lagi. ',
+        'Kalau hidup sekadar hidup, babi di hutan juga hidup. Kalau kerja sekadar bekerja, kera juga bekerja.',
+        'Jika Anda melakukan sesuatu yang baik, setelah beberapa lama, tanpa anda pernah merasakannya, anda akan mulai untuk pamer. Setelah itu, anda tidak akan pernah dipandang baik lagi.',
         'Mengerti bahwa memaafkan itu proses yang menyakitkan. Mengerti, walau menyakitkan itu harus dilalui agar langkah kita menjadi jauh lebih ringan. Ketahuilah, memaafkan orang lain sebenarnya jauh lebih mudah dibandingkan memaafkan diri sendiri.',
     ]
-    return phrase[Math.floor(Math.random() * phrase.length)];
+    return phrase[Math.floor(Math.random() * phrase.length)].trim();
 }

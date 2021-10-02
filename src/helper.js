@@ -16,8 +16,8 @@ let phrase = [
     'Tidak ada yang baru di bawah matahari. Semuanya sudah dilakukan sebelumnya.',
     'Orang-orang biasanya melihat apa yang mereka cari, dan mendengar apa yang mereka ingin dengar. ',
     'Jika kita ibaratkan, maka peradaban manusia persis seperti roda. Terus berputar. Naik-turun. Mengikuti siklusnya.',
-    'Kalau hidup sekadar hidup, babi di hutan juga hidup. Kalau kerja sekadar bekerja, kera juga bekerja. ',
-    'Jika Anda melakukan sesuatu yang baik, setelah beberapa lama, tanpa anda pernah merasakannya, anda akan mulai untuk pamer. Setelah itu, anda tidak akan pernah dipandang baik lagi. ',
+    'Kalau hidup sekadar hidup, babi di hutan juga hidup. Kalau kerja sekadar bekerja, kera juga bekerja.',
+    'Jika Anda melakukan sesuatu yang baik, setelah beberapa lama, tanpa anda pernah merasakannya, anda akan mulai untuk pamer. Setelah itu, anda tidak akan pernah dipandang baik lagi.',
     'Mengerti bahwa memaafkan itu proses yang menyakitkan. Mengerti, walau menyakitkan itu harus dilalui agar langkah kita menjadi jauh lebih ringan. Ketahuilah, memaafkan orang lain sebenarnya jauh lebih mudah dibandingkan memaafkan diri sendiri.',
 ]
 
@@ -26,7 +26,7 @@ const generateRandomId = (size) => {
 }
 
 const generateRandomPhrase = () => {
-    return phrase[Math.floor(Math.random() * phrase.length)];
+    return phrase[Math.floor(Math.random() * phrase.length)].trim();
 }
 
 module.exports = {generateRandomId, generateRandomWord: generateRandomPhrase};

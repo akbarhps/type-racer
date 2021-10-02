@@ -33,8 +33,11 @@ module.exports = class Room {
         socket.join(this.id);
         this.broadcastToRoom(socket, 'join', player);
         this.emitToRoom(socket, 'roomInfo', {
-            playerId: player.id, roomId: this.id, phrase: this.phrase,
-            players: this.players, waitingList: this.waitingList
+            roomId: this.id,
+            phrase: this.phrase,
+            playerId: player.id,
+            players: this.players,
+            waitingList: this.waitingList
         });
 
         if (!this.isPlaying && this.playersCount >= 2) {
@@ -55,19 +58,27 @@ module.exports = class Room {
 
     update(socket, player) {
         let current = this.players[player.id];
-        if (++current.progress >= this.phraseLength) current.rank = this.currentRank++;
+        current.progress++;
+
+        if (current.progress >= this.phraseLength) {
+            current.rank = this.currentRank;
+            this.currentRank++;
+        }
+
         // only reply to sender when finished (reduce delay)
-        this.broadcastToRoom(socket, 'update', {id: current.id, rank: current.rank}, current.rank > 0);
+        this.broadcastToRoom(socket, 'update', {
+            id: current.id,
+            rank: current.rank
+        }, current.rank > 0);
     }
 
     voteReset(socket, playerId) {
         if (this.playersCount < 2) this.isPlaying = false;
         if (this.players[playerId]) this.resetVoter++;
-        if (this.playersCount === 1 && this.resetVoter === 1) {
-            this.reset(socket);
-        } else if (this.playersCount <= 2 && this.resetVoter === 2) {
-            this.reset(socket);
-        } else if (this.playersCount > 2 && this.resetVoter >= Math.ceil(this.playersCount / 2)) {
+
+        const allPlayerVote = this.resetVoter === this.playersCount;
+        const halfPlayerVote = this.playersCount > 2 && this.resetVoter >= Math.ceil(this.playersCount / 2);
+        if (allPlayerVote || halfPlayerVote) {
             this.reset(socket);
         } else {
             this.broadcastToRoom(socket, 'voted', playerId, true)
@@ -78,15 +89,15 @@ module.exports = class Room {
         for (let player of this.waitingList) {
             this.players[player.id] = player;
             this.playersCount++;
-            this.waitingList.splice(this.waitingList.indexOf(player), 1);
         }
 
-        Object.keys(this.players).forEach(key => {
-            this.players[key].reset();
+        Object.values(this.players).forEach(player => {
+            player.reset();
         });
 
         this.resetVoter = 0;
         this.currentRank = 1;
+        this.waitingList = [];
         this.start(socket);
     }
 
@@ -95,6 +106,7 @@ module.exports = class Room {
         if (this.waitingList.includes(player)) {
             this.waitingList.splice(this.waitingList.indexOf(player), 1);
         }
+
         this.playersCount--;
         this.broadcastToRoom(socket, 'left', player.id);
 
