@@ -82,13 +82,13 @@ formSinglePlayerButton.addEventListener('click', () => {
     isSinglePlayer = true;
     formView.className += ' invisible';
     dashboardRoomId.innerText = `Single Player Mode`;
+    while (gameViewRacers.childNodes.length > 1) gameViewRacers.removeChild(gameViewRacers.firstChild);
 });
 
 formMultiPlayerButton.addEventListener('click', () => {
     socket.connect();
     const roomId = formRoomId.value;
-    const username = formUsername.value;
-    socket.emit('join', {roomId: roomId, username: username});
+    socket.emit('join', {roomId: roomId, username: formUsername.value || 'Guest'});
     isSinglePlayer = false;
     formView.className += ' invisible';
 });
