@@ -86,11 +86,9 @@ formSinglePlayerButton.addEventListener('click', () => {
 });
 
 formMultiPlayerButton.addEventListener('click', () => {
-    let username;
-    formUsername.value === '' ? username = 'Guest' : username = formUsername.value;
     socket.connect();
     const roomId = formRoomId.value;
-    socket.emit('join', {roomId: roomId, username: username});
+    socket.emit('join', {roomId: roomId, username: formUsername.value || 'Guest'});
     isSinglePlayer = false;
     formView.className += ' invisible';
 });
