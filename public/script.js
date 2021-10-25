@@ -66,7 +66,9 @@ socket.on('update', data => {
 });
 
 socket.on('voted', playerId => {
-    racers[playerId]?.state = 'rematch';
+    if(racers[playerId]) {
+        racers[playerId].state == 'rematch';
+    }
 });
 
 formSinglePlayerButton.addEventListener('click', () => {
