@@ -67,7 +67,7 @@ socket.on('update', data => {
 
 socket.on('voted', playerId => {
     if(racers[playerId]) {
-        racers[playerId].state == 'rematch';
+        racers[playerId].state = 'rematch';
     }
 });
 
